@@ -19,6 +19,15 @@
 #include "hw/i386/topology.h"
 #include "io/channel-socket.h"
 
+#ifndef BUS_MCEERR_AR
+/*
+ * Linux si_code values for hardware memory errors delivered via SIGBUS.
+ * Other hosts never report them, but the handlers are compiled anyway.
+ */
+#define BUS_MCEERR_AR 4
+#define BUS_MCEERR_AO 5
+#endif
+
 typedef struct KVMSlot
 {
     hwaddr start_addr;

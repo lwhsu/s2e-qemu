@@ -6911,6 +6911,13 @@ void kvm_request_xsave_components(X86CPU *cpu, uint64_t mask)
     if (!mask) {
         return;
     }
+#ifndef __linux__
+    /*
+     * Requesting dynamic XSAVE components is done with a Linux-specific
+     * arch_prctl(); other hosts cannot use them at all.
+     */
+    return;
+#endif
     /*
      * Just ignore bits that are not in CPUID[EAX=0xD,ECX=0].
      * ARCH_REQ_XCOMP_GUEST_PERM would fail, and QEMU has warned
@@ -6922,7 +6929,11 @@ void kvm_request_xsave_components(X86CPU *cpu, uint64_t mask)
 
     while (mask) {
         int bit = ctz64(mask);
+#ifdef __linux__
         int rc = syscall(SYS_arch_prctl, ARCH_REQ_XCOMP_GUEST_PERM, bit);
+#else
+        int rc = -1;
+#endif
         if (rc) {
             /*
              * Older kernel version (<5.17) do not support
