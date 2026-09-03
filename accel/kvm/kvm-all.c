@@ -61,6 +61,7 @@
 #include "migration/migration.h"
 #include "migration/savevm.h"
 #include "migration/vmstate.h"
+#include "migration/global_state.h"
 #include "block/block-global-state.h"
 #include "system/system.h"
 
@@ -2802,6 +2803,14 @@ static int kvm_dev_save_snapshot(void)
         vmstate_unregister_blacklisted_devices();
         unregistered = true;
     }
+
+    /*
+     * The globalstate section stores the run state string. Nothing fills it in
+     * unless a snapshot was loaded earlier (or a migration was started), so
+     * store it here as save_snapshot() does: an empty string fails to parse
+     * in global_state_post_load() when the device state is restored.
+     */
+    global_state_store();
 
     if (qemu_savevm_state(f, &err) < 0) {
         if (err) {
