@@ -1701,7 +1701,8 @@ for f in $LINKS ; do
 done
 
 # use included Linux headers for KVM architectures
-if test "$host_os" = "linux" && test -n "$linux_arch"; then
+# (also on FreeBSD, where the KVM client code is built for user-space KVM emulators such as libs2e)
+if { test "$host_os" = "linux" || test "$host_os" = "freebsd"; } && test -n "$linux_arch"; then
   symlink "$source_path/linux-headers/asm-$linux_arch" linux-headers/asm
 fi
 

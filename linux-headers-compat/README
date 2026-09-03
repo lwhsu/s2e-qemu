@@ -1,0 +1,6 @@
+Replacement Linux UAPI headers for building the KVM client code on hosts that
+do not ship them (currently FreeBSD). They are only used together with a
+user-space KVM emulator such as libs2e (https://github.com/S2E/s2e), which
+implements /dev/kvm entirely in user space; the ioctl numbers therefore only
+have to match between QEMU and that library, and they use the native BSD
+encoding from <sys/ioccom.h>.

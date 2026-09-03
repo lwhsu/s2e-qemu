@@ -776,6 +776,13 @@ if host_os == 'linux'
   add_project_arguments('-isystem', meson.current_source_dir() / 'linux-headers',
                         '-isystem', 'linux-headers',
                         language: all_languages)
+elif host_os == 'freebsd'
+  # The KVM client code is built on FreeBSD for user-space KVM emulators (libs2e).
+  # linux-headers-compat provides the few UAPI headers that the system does not have.
+  add_project_arguments('-isystem', meson.current_source_dir() / 'linux-headers',
+                        '-isystem', 'linux-headers',
+                        '-isystem', meson.current_source_dir() / 'linux-headers-compat',
+                        language: all_languages)
 endif
 
 add_project_arguments('-iquote', '.',
@@ -862,7 +869,7 @@ endif
 ###############################################
 
 accelerators = []
-if get_option('kvm').allowed() and host_os == 'linux'
+if get_option('kvm').allowed() and host_os in ['linux', 'freebsd']
   accelerators += 'CONFIG_KVM'
 endif
 
@@ -2426,7 +2433,7 @@ endif
 config_host_data.set('HOST_' + host_arch.to_upper(), 1)
 
 kvm_targets_c = '""'
-if get_option('kvm').allowed() and host_os == 'linux'
+if get_option('kvm').allowed() and host_os in ['linux', 'freebsd']
   kvm_targets_c = '"' + '" ,"'.join(kvm_targets) + '"'
 endif
 config_host_data.set('CONFIG_KVM_TARGETS', kvm_targets_c)
@@ -4270,6 +4277,8 @@ foreach target : target_dirs
   target_inc = [include_directories('target' / config_target['TARGET_BASE_ARCH'])]
   if host_os == 'linux'
     target_inc += include_directories('linux-headers', is_system: true)
+  elif host_os == 'freebsd'
+    target_inc += include_directories('linux-headers', 'linux-headers-compat', is_system: true)
   endif
   if target.endswith('-softmmu')
     target_type='system'
