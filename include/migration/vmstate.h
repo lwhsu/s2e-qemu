@@ -955,7 +955,8 @@ extern const VMStateInfo vmstate_info_qlist;
 #define VMSTATE_FD_V(_f, _s, _v)                                  \
     VMSTATE_SINGLE(_f, _s, _v, vmstate_info_fd, int32_t)
 
-#ifdef CONFIG_LINUX
+/* The __uN types come from linux/types.h, which FreeBSD gets from linux-headers-compat for KVM */
+#if defined(CONFIG_LINUX) || defined(CONFIG_FREEBSD)
 
 #define VMSTATE_U8_V(_f, _s, _v)                                   \
     VMSTATE_SINGLE(_f, _s, _v, vmstate_info_uint8, __u8)
@@ -992,7 +993,8 @@ extern const VMStateInfo vmstate_info_qlist;
 #define VMSTATE_FD(_f, _s)                                            \
     VMSTATE_FD_V(_f, _s, 0)
 
-#ifdef CONFIG_LINUX
+/* The __uN types come from linux/types.h, which FreeBSD gets from linux-headers-compat for KVM */
+#if defined(CONFIG_LINUX) || defined(CONFIG_FREEBSD)
 
 #define VMSTATE_U8(_f, _s)                                         \
     VMSTATE_U8_V(_f, _s, 0)
