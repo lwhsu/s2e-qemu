@@ -166,7 +166,8 @@ static void s2e_blk_init(BlockDriverState *bs)
     uint64_t length = QEMU_ALIGN_DOWN(s->image_size, BDRV_SECTOR_SIZE);
     s->sector_count = length / S2EB_SECTOR_SIZE;
 
-    s->l1_entries = s->sector_count / S2EB_L2_SECTORS;
+    /* Round up: the last L2 block may be partial when the image size is not a multiple of it */
+    s->l1_entries = (s->sector_count + S2EB_L2_SECTORS - 1) / S2EB_L2_SECTORS;
     s->l1 = g_malloc0(sizeof(*s->l1) * s->l1_entries);
 
     s->snapshot_fp = NULL;
