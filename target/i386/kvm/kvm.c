@@ -3500,7 +3500,9 @@ int kvm_arch_init(MachineState *ms, KVMState *s)
     }
 
     uname(&utsname);
-    lm_capable_kernel = strcmp(utsname.machine, "x86_64") == 0;
+    /* FreeBSD reports "amd64" for x86-64 hosts */
+    lm_capable_kernel = strcmp(utsname.machine, "x86_64") == 0 ||
+                        strcmp(utsname.machine, "amd64") == 0;
 
     ret = kvm_vm_set_identity_map_addr(s, KVM_IDENTITY_BASE);
     if (ret < 0) {
