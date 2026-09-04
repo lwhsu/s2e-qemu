@@ -819,7 +819,8 @@ static int s2e_snapshot_load_disk_data_ro(BDRVS2EState *s, const S2ESnapshotHead
     s->vmstate_sector_map_entries = header->sector_map_entries;
     s->vmstate_sectors_start = header->sectors_start;
 
-    uint64_t count = s->sector_count / S2EB_BITS_PER_ENTRY;
+    // Round up: the last entry covers a partial group of sectors
+    uint64_t count = (s->sector_count + S2EB_BITS_PER_ENTRY - 1) / S2EB_BITS_PER_ENTRY;
     s->vmstate_dirty_bitmap = g_malloc0(count * sizeof(*s->vmstate_dirty_bitmap));
 
     for (i = 0; i < header->sector_map_entries; ++i) {

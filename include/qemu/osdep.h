@@ -556,13 +556,15 @@ int qemu_shm_alloc(size_t size, Error **errp);
 int madvise(char *, size_t, int);
 #endif
 
-#if defined(CONFIG_LINUX)
+/*
+ * Linux si_code values for hardware memory errors delivered via SIGBUS.
+ * Other hosts never report them, but the KVM handlers are compiled anyway.
+ */
 #ifndef BUS_MCEERR_AR
 #define BUS_MCEERR_AR 4
 #endif
 #ifndef BUS_MCEERR_AO
 #define BUS_MCEERR_AO 5
-#endif
 #endif
 
 #if defined(__linux__) && \
